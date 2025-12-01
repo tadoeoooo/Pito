@@ -1,0 +1,72 @@
+local player = game.Players.LocalPlayer
+local coreGui = game:GetService("CoreGui")
+
+-- Espera 15 segundos antes de activar el blackout
+task.wait(15)
+
+-- Crea el ScreenGui para el blackout y la barra de carga
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "BlackoutOverlay"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.DisplayOrder = 999999
+screenGui.Parent = coreGui
+
+-- Crea el fondo negro
+local blackoutFrame = Instance.new("Frame")
+blackoutFrame.Size = UDim2.new(1, 0, 1, 0)
+blackoutFrame.Position = UDim2.new(0, 0, 0, 0)
+blackoutFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+blackoutFrame.BackgroundTransparency = 0
+blackoutFrame.ZIndex = 999999
+blackoutFrame.Parent = screenGui
+
+-- Crea la barra de carga
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(0.5, 0, 0.05, 0)
+loadingFrame.Position = UDim2.new(0.25, 0, 0.475, 0)
+loadingFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+loadingFrame.BorderSizePixel = 0
+loadingFrame.ZIndex = 999999 + 1
+loadingFrame.Parent = blackoutFrame
+
+-- Crea la barra de progreso
+local progressBar = Instance.new("Frame")
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+progressBar.Position = UDim2.new(0, 0, 0, 0)
+progressBar.BackgroundColor3 = Color3.new(0, 1, 0)
+progressBar.BorderSizePixel = 0
+progressBar.ZIndex = 999999 + 2
+progressBar.Parent = loadingFrame
+
+-- Crea la etiqueta de porcentaje
+local percentLabel = Instance.new("TextLabel")
+percentLabel.Size = UDim2.new(1, 0, 1, 0)
+percentLabel.Position = UDim2.new(0, 0, 0, 0)
+percentLabel.BackgroundTransparency = 1
+percentLabel.TextColor3 = Color3.new(1, 1, 1)
+percentLabel.Text = "0%"
+percentLabel.TextScaled = true
+percentLabel.ZIndex = 999999 + 3
+percentLabel.Parent = loadingFrame
+
+-- Lógica de la barra de carga (3 minutos)
+local totalTime = 180 -- 3 minutos en segundos
+local startTime = os.time()
+
+coroutine.wrap(function()
+    while true do
+        local currentTime = os.time()
+        local elapsedTime = currentTime - startTime
+        local progress = math.min(elapsedTime / totalTime, 1)
+
+        -- Actualiza la barra de progreso
+        progressBar.Size = UDim2.new(progress, 0, 1, 0)
+        percentLabel.Text = string.format("%d%%", progress * 100)
+
+        if progress >= 1 then
+            break
+        end
+        task.wait(0.1)
+    end
+end)()
